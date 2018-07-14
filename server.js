@@ -81,6 +81,17 @@ cloak.configure({
     },
 	
 	
+	
+	
+  },
+  room: {
+	  pulse: function() {
+		  
+		  update(this)
+		  
+	  },
+	  
+	  
   },
   socketIo: {
 		origins:'*:*'
@@ -110,39 +121,34 @@ createroom(1)
 
 
 
-function update() {
-	for (i = 0; i < cloak.roomCount(); i++) {
+function update(obj) {
+	
 		
 		var data={}
 		data[0]=cloak.userCount()
-		data[1]=room[i].data.phase
-		data[2]=room[i].data.counter
+		data[1]=obj.data.phase
+		data[2]=obj.data.counter
 	 cloak.messageAll('data', data );
-	 cloak.messageAll('global', room[i].data.chatLog );
-   if(room[i].data.phase==0)  {
+	 cloak.messageAll('global', obj.data.chatLog );
+   if(obj.data.phase==0)  {
 	   
-	   room[i].data.counter++;
-	   if (room[i].data.counter>= 600)  {
-		   room[i].data.phase=1;
-		   room[i].data.counter=0;
+	   obj.data.counter++;
+	   if (obj.data.counter>= 600)  {
+		   obj.data.phase=1;
+		   obj.data.counter=0;
 	   }
    }
 	   
    
 
-   }
+   
 
 }
 
 setInterval(function() {
 	
+	console.log(cloak.roomCount()+" rooms running.");
 	
 
- console.log(cloak.roomCount()+ " rooms.");
- console.log("Phase: "+room[0].data.phase);
- console.log("Time: "+room[0].data.counter);
- console.log(room[0].getMembers(true));
-  console.log(room[0].data.chatLog);
- 
- update()
-}, 100);
+
+}, 2000);
