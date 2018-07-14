@@ -9,7 +9,15 @@ var app = express();
 var server = require('http').createServer(app)
 var cloak = require('cloak');
 var staticPath = path.resolve(__dirname, '/client');
+
 //app.use(express.static(staticPath));
+
+
+
+
+
+
+
 
 app.get('/', function (req, res) {
   // render/ejs is now easier to use since
@@ -56,7 +64,9 @@ room[num]=cloak.createRoom("room"+num);
 room[num].data.round=0;
 room[num].data.phase=0;
 room[num].data.counter=0;
-room[num].data.chatLog=[]
+room[num].data.chatLog=[];
+room[num].data.sinners=[];
+room[num].data.initialized=false;
 }
 
 
@@ -72,6 +82,7 @@ cloak.configure({
 		console.log(arg);
 		var name= user.name;
       user.getRoom().data.chatLog.push({name,arg}); 
+	  
     },
 	command: function(arg, user) {
 		
@@ -85,7 +96,10 @@ cloak.configure({
 			user.message('localtxt', "Please set name first")
 			}
 			else{
-			room[ parseInt(words[1])].addMember(user)
+			room[ parseInt(words[1])].addMember(user);
+			var id = user.id
+			var name = user.name
+			room[ parseInt(words[1])].data.sinners.push({id,name});
 			}
 		}
     },
@@ -115,7 +129,7 @@ cloak.configure({
   },
   room: {
 	  pulse: function() {
-		  console.log(this.data.chatLog)
+		  console.log(this.data.sinners)
 		  update(this)
 		  
 	  },
@@ -154,16 +168,36 @@ createroom(1)
 
 
 function update(obj) {
-	
+	//intialized
+	if (!obj.data.initialized)
+	{
+		if(obj.getMembers().length % 2 == 0){
+			
+	     obj.data.status="starting";
+			
+		} else {
+			
+			obj.data.status="wfp";
+		}
+		
+		sendStatus=obj.data.status
+		obj.messageMembers('roomStatus', sendStatus, "status" );
+	}
 		
 		var data={}
-		data[0]=cloak.userCount()
+		data[0]= obj.getMembers().length;
 		data[1]=obj.data.phase
 		data[2]=obj.data.counter
 	obj.messageMembers('data', data );
+	
+	obj.messageMembers('roomSinners', obj.data.sinners);
 	 
 	 
 	obj.messageMembers('global', obj.data.chatLog);
+   
+   //run 
+   if(obj.data.initialized){
+	   //phase1
    if(obj.data.phase==0)  {
 	   
 	   obj.data.counter++;
@@ -173,6 +207,7 @@ function update(obj) {
 	   }
    }
 	   
+   }
    
 
    
@@ -185,3 +220,11 @@ setInterval(function() {
 	
 
 }, 2000);
+
+
+
+var roles={}
+//antichrist
+roles.ac={}
+roles.ac.name="The Antichrist"
+roles.ac.immunity=2

@@ -7,6 +7,8 @@ var test='http://localhost:5000'
    var global={};
    var player={};
    var local=[];
+   var roomData={}
+   var connected=[]
    
 cloak.configure({
 
@@ -31,7 +33,25 @@ cloak.configure({
 	localtxt: function(arg) {
       local.push(arg); 
 	 
-    }
+    },
+	
+	roomStatus: function(arg) {
+		
+		
+			
+      roomData.status=arg; 
+		
+		
+	 
+    },
+	roomSinners: function(arg) {
+	
+			
+      connected=arg; 
+		
+	},
+	
+	
 	
   },
   //events
@@ -93,6 +113,10 @@ setInterval(function() {
   
     ctx.fillStyle = "#c7f2bc";
 ctx.fillRect(0,0,1400,800);
+
+    ctx.fillStyle = "#000000";
+ctx.fillRect(500,0,400,800);
+
    ctx.fillStyle = "#000000";
    ctx.font = '21px serif';
 	
@@ -110,7 +134,28 @@ ctx.fillText('localuser :' +local[i],25,200+25*i);
 }
   }
   else {
+ctx.fillStyle = "#FFFFFF";	
+ctx.fillText("Connected Players:",550,50);
+	  for (i = 0; i < connected.length; i++) {
+	
+ctx.fillStyle = "#FFFFFF";	
+ctx.fillText(connected[i].name,550,50+25*i+25);
+	
+}
+
+ctx.fillStyle = "#000000";	
+
+	  
+	  
+	  if (roomData.status=="starting"|| roomData.status=="running") {
 ctx.fillText('Users Connected:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
+	  } else {
+		  
+		  ctx.fillText('Users Connected:' +userCount + " Waiting for more players." , 25, 50);
+		  
+	  }
+
+
 for (i = 0; i < global.length; i++) {
 	
 	if (typeof global[i] == "undefined" ) {
