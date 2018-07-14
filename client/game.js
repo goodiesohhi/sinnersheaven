@@ -1,5 +1,5 @@
 
-var test='http://localhost:5100'
+var test='http://localhost:5000'
  var userCount = 2;
 
   var phase = 0;
@@ -34,7 +34,7 @@ cloak.configure({
 
 //cloak.run(test);
 
-cloak.run('https://sinnersheaven.herokuapp.com:'+5100);
+cloak.run('https://sinnersheaven.herokuapp.com:'+this.PORT);
 
 var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");
