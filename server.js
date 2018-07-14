@@ -70,13 +70,42 @@ cloak.configure({
     messages: {
     publicTxt: function(arg, user) {
 		console.log(arg);
-		var name= user.id;
+		var name= user.name;
       user.getRoom().data.chatLog.push({name,arg}); 
+    },
+	command: function(arg, user) {
+		
+		var words = arg.split(" ");
+		if (words[0]=="/setname") {
+			user.name = words[1];
+			user.message('localtxt', "Name SET")
+		}
+		if (words[0]=="/join"&&user.data.room=="lobby") {
+			if(user.name=="Nameless User") { 
+			user.message('localtxt', "Please set name first")
+			}
+			else{
+			room[ parseInt(words[1])].addMember(user)
+			}
+		}
+    },
+	
+	checkRoom: function(arg, user) {
+		
+		if (user.getRoom().isLobby) {
+      user.data.room="lobby";
+		} else {
+	   user.data.room="room";		
+			
+		}
+		
+		cloak.messageAll('updateSelf', user.data);
+
     },
 	
 	 init: function(arg, user) {
-     user.data={};
-	 room[0].addMember(user)
+     user.data.room="lobby";
+	 
 	  console.log(arg+ 'created');
     },
 	
@@ -98,7 +127,7 @@ cloak.configure({
 	},
   
    defaultRoomSize: 4,
-   autoJoinLobby:false,
+   autoJoinLobby:true,
    pruneEmptyRooms:null,
 
    minRoomMembers:null,
@@ -154,6 +183,5 @@ setInterval(function() {
 	
 	console.log(cloak.roomCount()+" rooms running.");
 	
-
 
 }, 2000);

@@ -5,6 +5,8 @@ var test='http://localhost:5000'
   var phase = 0;
    var counter = 0;
    var global={};
+   var player={};
+   var local=[];
    
 cloak.configure({
 
@@ -19,6 +21,15 @@ cloak.configure({
 	
 	global: function(arg) {
       global=arg
+	 
+    },
+	
+	updateSelf: function(arg) {
+      player=arg
+	 
+    },
+	localtxt: function(arg) {
+      local.push(arg); 
 	 
     }
 	
@@ -50,13 +61,25 @@ var ctx = txt.getContext("2d");
 context.fillRect(0,0,1400,800);
 
 $(document).keypress(function(e) {
+	
     if(e.which == 13) {
+		
        
 
 //Get
 var msg = $('#input').val();
 
+if ( msg.charAt(0)=="/") {
+	
+	cloak.message('command', msg);
+	local.push(msg); 
+	
+}
+ else
+{
 cloak.message('publicTxt', msg);
+local.push("not connected"); 
+}
 //Set
 $('#input').val("");
 
@@ -72,7 +95,21 @@ setInterval(function() {
 ctx.fillRect(0,0,1400,800);
    ctx.fillStyle = "#000000";
    ctx.font = '21px serif';
-  
+	
+   cloak.message('checkRoom',"hey" )
+   
+  if ( player.room=="lobby") {
+	  ctx.fillText("/setname [name] to set name",25,50);
+	  ctx.fillText("/join [0 / 1] to join either room 0 or 1",25,100)
+	  
+	  for (i = 0; i < local.length; i++) {
+	
+	
+ctx.fillText('localuser :' +local[i],25,200+25*i);
+	
+}
+  }
+  else {
 ctx.fillText('Users Connected:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
 for (i = 0; i < global.length; i++) {
 	
@@ -84,6 +121,7 @@ for (i = 0; i < global.length; i++) {
 ctx.fillText(global[i].name +' : '+global[i].arg,25,100+25*i);
 	}
 }
+  }
 
 }, 100);
 
