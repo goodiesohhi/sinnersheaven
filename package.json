@@ -1,0 +1,19 @@
+{
+  "name": "sinnersheaven",
+  "version": "1.0.0",
+  "description": "A game about lying your way to heaven",
+  "main": "index.js",
+  "scripts": {
+    "test": "sin"
+  },
+  "author": "goodiesohhi",
+  "license": "ISC",
+  "dependencies": {
+    "cloak": "^1.0.0",
+    "connect": "^3.6.6",
+    "express": "^4.16.3",
+    "jquery": "^3.3.1",
+    "serve-static": "^1.13.2",
+    "socket.io": "^2.1.1"
+  }
+}

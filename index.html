@@ -1,0 +1,72 @@
+<html>
+  <head>
+    <title>A Multiplayer Game</title>
+    <style>
+      #canvas {
+	  left:0px;
+      
+        border: 5px solid grey;
+		position:absolute;
+		
+      }
+	  
+	   #txtcanvas {
+	     border: 5px solid grey;
+	   left:1200px;
+       position:absolute;
+       
+		
+      }
+	  
+	 
+	
+	  
+	#input{
+	width:2000px;
+	  height:50px;
+	  border:5px solid grey;
+	}
+	
+	  
+	  #container{
+	  position:relative;
+	  border:5px solid grey;
+	  width:2000px;
+	  height:700px;
+	  }
+	  
+	  
+	
+.part{position:absolute;}
+#canvasBottom{left:0;border:2px solid grey;}
+#canvas{left:0;border:1px solid grey;}
+#txtcanvas{left:1200px;border:1px solid grey;};  
+
+    </style>
+    
+  </head>
+  <body>
+  
+  <div id="container">
+
+  
+	
+	  
+     
+    <canvas id="canvas" class="part" width=1200 height=700></canvas>  
+    <canvas id="txtcanvas" class="part" width=800 height=700></canvas> 
+  
+      	
+	
+	 
+	
+	</div>
+	 <input id="input" width=2000 height=50>
+  </body>
+ 
+      <script src="./client/lib/underscore-min.js"></script>
+    <script src="./client/lib/socket.io.min.js"></script>
+    <script src="./client/lib/cloak-client.min.js"></script>
+    <script src="./client/lib/jquery-3.3.1.min.js"></script>
+	 <script src="./client/game.js"></script>
+</html>
