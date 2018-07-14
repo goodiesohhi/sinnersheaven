@@ -35,8 +35,8 @@ cloak.configure({
 
 //cloak.run(test);
 
-cloak.run(window.location.origin);
-console.log(window.location.origin)
+cloak.run(location.protocol + '//' + location.host);
+console.log(location.protocol + '//' + location.host)
 
 var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");

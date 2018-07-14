@@ -135,6 +135,8 @@ function update() {
 }
 
 setInterval(function() {
+	
+	
 
  console.log(cloak.roomCount()+ " rooms.");
  console.log("Phase: "+room[0].data.phase);
