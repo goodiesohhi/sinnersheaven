@@ -32,9 +32,11 @@ cloak.configure({
   
 });
 
+
 //cloak.run(test);
 
-cloak.run('https://sinnersheaven.herokuapp.com:'+this.PORT);
+cloak.run(window.location.origin);
+console.log(window.location.origin)
 
 var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");
