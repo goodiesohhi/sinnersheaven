@@ -1,10 +1,11 @@
 
 var test='http://localhost:5100'
  var userCount = 2;
- var root='https://sinnersheaven.herokuapp.com:'+process.env.PORT
+
   var phase = 0;
    var counter = 0;
    var global={};
+   const PORT = process.env.PORT || 5000;
 cloak.configure({
 
   // You'll add stuff here later.
@@ -33,7 +34,7 @@ cloak.configure({
 
 //cloak.run(test);
 
-cloak.run(process.env.CLOAK);
+cloak.run('https://sinnersheaven.herokuapp.com:'+5100);
 
 var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");

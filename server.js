@@ -63,7 +63,7 @@ room[num].data.chatLog=[]
 var cloak = require('cloak');
 
 cloak.configure({
-  port: PORT,
+  port: 5100,
   
   
     messages: {
