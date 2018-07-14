@@ -99,7 +99,7 @@ cloak.configure({
   
    defaultRoomSize: 4,
    autoJoinLobby:false,
-   pruneEmptyRooms:10000,
+   pruneEmptyRooms:null,
 
    minRoomMembers:null,
   
