@@ -4,7 +4,7 @@ var http = require('http');
 var path = require('path');
 
 var room={}
-
+const PORT = process.env.PORT || 5000;
 var app = express();
 
 var staticPath = path.resolve(__dirname, '/client');
@@ -46,7 +46,7 @@ app.get('/client/lib/jquery-3.3.1.min.js', function (req, res) {
 })
 
 
-app.listen(5000, function() {
+app.listen(PORT, function() {
   console.log('listening');
 });
 
@@ -63,7 +63,7 @@ room[num].data.chatLog=[]
 var cloak = require('cloak');
 
 cloak.configure({
-  port: 5100,
+  port: PORT,
   
   
     messages: {

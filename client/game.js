@@ -1,7 +1,7 @@
 
 var test='http://localhost:5100'
  var userCount = 2;
- var root='https://sinnersheaven.herokuapp.com:5100'
+ var root='https://sinnersheaven.herokuapp.com:'+process.env.PORT
   var phase = 0;
    var counter = 0;
    var global={};
