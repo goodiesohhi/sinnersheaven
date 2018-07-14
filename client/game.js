@@ -19,7 +19,9 @@ cloak.configure({
 	
 	global: function(arg) {
       global=arg
+	 
     }
+	
   },
   //events
    serverEvents: {
@@ -73,7 +75,14 @@ ctx.fillRect(0,0,1400,800);
   
 ctx.fillText('Users Connected:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
 for (i = 0; i < global.length; i++) {
+	
+	if (typeof global[i] == "undefined" ) {
+		ctx.fillText("error",25,100+25*i);
+	} 
+	else 
+	{
 ctx.fillText(global[i].name +' : '+global[i].arg,25,100+25*i);
+	}
 }
 
 }, 100);

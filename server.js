@@ -86,7 +86,7 @@ cloak.configure({
   },
   room: {
 	  pulse: function() {
-		  
+		  console.log(this.data.chatLog)
 		  update(this)
 		  
 	  },
@@ -119,6 +119,9 @@ createroom(0)
 createroom(1)
 
 
+	
+	
+	
 
 
 function update(obj) {
@@ -128,8 +131,10 @@ function update(obj) {
 		data[0]=cloak.userCount()
 		data[1]=obj.data.phase
 		data[2]=obj.data.counter
-	 cloak.messageAll('data', data );
-	 cloak.messageAll('global', obj.data.chatLog );
+	obj.messageMembers('data', data );
+	 
+	 
+	obj.messageMembers('global', obj.data.chatLog);
    if(obj.data.phase==0)  {
 	   
 	   obj.data.counter++;
