@@ -5,7 +5,7 @@ var test='http://localhost:5100'
   var phase = 0;
    var counter = 0;
    var global={};
-   const PORT = process.env.PORT || 5000;
+   
 cloak.configure({
 
   // You'll add stuff here later.
