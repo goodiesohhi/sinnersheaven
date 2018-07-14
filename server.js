@@ -78,7 +78,12 @@ cloak.configure({
 	 room[0].addMember(user)
 	  console.log(arg+ 'created');
     },
+	
+	
   },
+  socketIo: {
+		origins:'*:*'
+	},
   
    defaultRoomSize: 4,
    autoJoinLobby:false,
