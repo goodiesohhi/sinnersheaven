@@ -90,7 +90,7 @@ cloak.configure({
    autoJoinLobby:false,
    pruneEmptyRooms:10000,
 
-   minRoomMembers:1,
+   minRoomMembers:null,
   
 });
 
