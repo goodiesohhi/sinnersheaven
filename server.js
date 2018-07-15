@@ -54,6 +54,9 @@ app.get('/client/lib/jquery-3.3.1.min.js', function (req, res) {
   res.sendFile(path.join(__dirname, '/client/lib/jquery-3.3.1.min.js'))
 })
 
+function randint(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+} 
 
 server.listen(PORT, function() {
   console.log('listening');
@@ -81,7 +84,7 @@ cloak.configure({
   
     messages: {
     publicTxt: function(arg, user) {
-		console.log(arg);
+		
 		var name= user.name;
       user.getRoom().data.chatLog.push({name,arg}); 
 	  
@@ -98,10 +101,17 @@ cloak.configure({
 			user.message('localtxt', "Please set name first")
 			}
 			else{
+				
+				if (room[ parseInt(words[1])].data.status!="running") {
+				
+				
 			room[ parseInt(words[1])].addMember(user);
+				
 			var id = user.id
 			var name = user.name
-			room[ parseInt(words[1])].data.sinners.push({id,name});
+				} else {
+					user.message('localtxt', "Game has started. Failed to join")
+				}
 			}
 		}
     },
@@ -122,7 +132,7 @@ cloak.configure({
 	 init: function(arg, user) {
      user.data.room="lobby";
 	 
-	  console.log(arg+ 'created');
+	  
     },
 	
 	
@@ -131,7 +141,7 @@ cloak.configure({
   },
   room: {
 	  pulse: function() {
-		  console.log(this.data.sinners)
+
 		  update(this)
 		  
 	  },
@@ -174,13 +184,33 @@ function update(obj) {
 	//intialized
 	if (!obj.data.initialized)
 	{
-		if(obj.getMembers().length % 2  == 0 && obj.getMembers().length >= 4){
+		if(obj.getMembers().length % 2  == 0 && obj.getMembers().length >= 2){
 			
 	     obj.data.status="starting";
 		 
 		 if (obj.data.startTimer>0) {
 			 obj.data.startTimer--;
 		 } else {
+			 
+			 var adding = obj.getMembers(true);
+			for (i = 0; i < obj.getMembers().length; i++) {
+				var id= adding[i].id
+				var name= adding[i].name
+			 obj.data.sinners.push({id,name})
+			 
+			 
+			};
+			
+			for (i = 0; i < obj.data.sinners.length; i++) {
+				obj.data.sinners[i].role= rolelist[randint(1,(rolelist.length-1))];
+			 
+			 
+			}
+			
+			
+		
+			obj.data.sinners[ randint(0,(obj.data.sinners.length-1))].role=rolelist[0];
+			
 			 
 			 obj.data.status="running";
 			 obj.data.initialized=true;
@@ -207,7 +237,7 @@ function update(obj) {
 	obj.messageMembers('data', data );
 	
 	obj.messageMembers('roomSinners', obj.data.sinners);
-	 console.log("log: "+obj.getMembers(true));
+	
 	 obj.messageMembers('roomMembers', obj.getMembers(true));
 	obj.messageMembers('global', obj.data.chatLog);
 		obj.messageMembers('timer', obj.data.startTimer);
@@ -215,6 +245,12 @@ function update(obj) {
    
    //run 
    if(obj.data.initialized){
+	   
+	   for (i=0;i< obj.getMembers(true).length;i++) {
+	   var id = obj.getMembers(true)[i].id;
+	 cloak.getUser(id).message('selfSinner', obj.data.sinners[i]);
+	   
+	   }
 	   //phase1
    if(obj.data.phase==0)  {
 	   
@@ -242,7 +278,34 @@ setInterval(function() {
 
 
 var roles={}
-//antichrist
+//Antichrist
 roles.ac={}
 roles.ac.name="The Antichrist"
 roles.ac.immunity=2
+//Oracle
+roles.oc={}
+roles.oc.name="The Oracle"
+roles.oc.immunity=0
+//changeling
+roles.cg={}
+roles.cg.name="Changeling"
+roles.cg.immunity=0
+//Medium
+roles.me={}
+roles.me.name="The Medium"
+roles.me.immunity=0
+//Detonator
+roles.dt={}
+roles.dt.name="The Detonator"
+roles.dt.immunity=0
+
+var rolelist=[]
+rolelist[0]=roles.ac;
+rolelist[1]=roles.oc;
+rolelist[2]=roles.cg;
+rolelist[3]=roles.me;
+rolelist[4]=roles.dt;
+
+
+
+

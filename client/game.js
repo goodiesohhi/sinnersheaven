@@ -11,6 +11,7 @@ var test='http://localhost:5000'
    var roomData={}
    var connected=[]
    var startTimer=0;
+   var theSinner={};
    
 cloak.configure({
 
@@ -25,6 +26,10 @@ cloak.configure({
 	
 	global: function(arg) {
       global=arg
+	 
+    },
+	selfSinner: function(arg) {
+      theSinner=arg
 	 
     },
 	
@@ -124,8 +129,15 @@ $('#input').val("");
 });
 
 setInterval(function() {
-  
-  
+  //main
+   context.fillStyle = "#FFFFFF";
+   context.font = '48px serif';
+    if ( roomData.status=="running") {
+   context.fillText("You are "+theSinner.role.name,25,50);
+	}
+	 
+   
+  //chatbox
     ctx.fillStyle = "#c7f2bc";
 ctx.fillRect(0,0,1400,800);
 
@@ -150,7 +162,20 @@ ctx.fillText('localuser :' +local[i],25,200+25*i);
   }
   else {
 ctx.fillStyle = "#FFFFFF";	
+if ( roomData.status=="running") { 
+ctx.fillText("The Sinners:",550,50);
+
+	  for (i = 0; i < players.length; i++) {
+	
+ctx.fillStyle = "#FFFFFF";	
+ctx.fillText(players[i].name,550,50+25*i+25);
+	
+}
+}
+else
+{
 ctx.fillText("Connected Players:",550,50);
+
 	  for (i = 0; i < connected.length; i++) {
 	
 ctx.fillStyle = "#FFFFFF";	
@@ -158,12 +183,13 @@ ctx.fillText(connected[i].name,550,50+25*i+25);
 	
 }
 
+}
 ctx.fillStyle = "#000000";	
 
 	  
 	  
 	  if ( roomData.status=="running") {
-ctx.fillText('Users Connected:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
+ctx.fillText('Sinners:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
 	  } else if  (roomData.status=="starting") {
 		  ctx.fillText('Starting in: '+ startTimer , 25, 50);
 	  
