@@ -71,6 +71,7 @@ room[num].data.chatLog=[];
 room[num].data.sinners=[];
 room[num].data.initialized=false;
 room[num].data.startTimer=100;
+room[num].data.roomnumber=num;
 
 }
 
@@ -174,6 +175,12 @@ createroom(0)
 
 createroom(1)
 
+createroom(2)
+
+createroom(3)
+createroom(4)
+
+createroom(5)
 
 	
 	
@@ -181,6 +188,12 @@ createroom(1)
 
 
 function update(obj) {
+	
+	if (obj.data.status=="running"&&obj.getMembers().length==0)  {
+		var number = obj.data.roomnumber
+		createroom(number);
+		obj.delete()
+	}
 	//intialized
 	if (!obj.data.initialized)
 	{

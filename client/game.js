@@ -151,7 +151,7 @@ ctx.fillRect(500,0,400,800);
    
   if ( player.room=="lobby") {
 	  ctx.fillText("/setname [name] to set name",25,50);
-	  ctx.fillText("/join [0 / 1] to join either room 0 or 1",25,100)
+	  ctx.fillText("/join [0 - 5] to join room 0 to 5",25,100)
 	  
 	  for (i = 0; i < local.length; i++) {
 	
