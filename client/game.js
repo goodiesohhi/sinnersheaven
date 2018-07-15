@@ -7,8 +7,10 @@ var test='http://localhost:5000'
    var global={};
    var player={};
    var local=[];
+   var players=[];
    var roomData={}
    var connected=[]
+   var startTimer=0;
    
 cloak.configure({
 
@@ -30,6 +32,11 @@ cloak.configure({
       player=arg
 	 
     },
+	
+	timer: function(arg) {
+      startTimer=arg
+	 
+    },
 	localtxt: function(arg) {
       local.push(arg); 
 	 
@@ -47,9 +54,17 @@ cloak.configure({
 	roomSinners: function(arg) {
 	
 			
+      players=arg; 
+		
+	},
+	
+	roomMembers: function(arg) {
+	
+			
       connected=arg; 
 		
 	},
+	
 	
 	
 	
@@ -147,9 +162,14 @@ ctx.fillStyle = "#000000";
 
 	  
 	  
-	  if (roomData.status=="starting"|| roomData.status=="running") {
+	  if ( roomData.status=="running") {
 ctx.fillText('Users Connected:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
-	  } else {
+	  } else if  (roomData.status=="starting") {
+		  ctx.fillText('Starting in: '+ startTimer , 25, 50);
+	  
+		  
+	  }
+	  else {
 		  
 		  ctx.fillText('Users Connected:' +userCount + " Waiting for more players." , 25, 50);
 		  

@@ -67,6 +67,8 @@ room[num].data.counter=0;
 room[num].data.chatLog=[];
 room[num].data.sinners=[];
 room[num].data.initialized=false;
+room[num].data.startTimer=100;
+
 }
 
 
@@ -145,6 +147,7 @@ cloak.configure({
    pruneEmptyRooms:null,
 
    minRoomMembers:null,
+   reconnectWait:1000,
   
 });
 
@@ -171,18 +174,31 @@ function update(obj) {
 	//intialized
 	if (!obj.data.initialized)
 	{
-		if(obj.getMembers().length % 2 == 0){
+		if(obj.getMembers().length % 2  == 0 && obj.getMembers().length >= 4){
 			
 	     obj.data.status="starting";
+		 
+		 if (obj.data.startTimer>0) {
+			 obj.data.startTimer--;
+		 } else {
+			 
+			 obj.data.status="running";
+			 obj.data.initialized=true;
+		 }
+		 
 			
 		} else {
-			
+			if ( obj.data.startTimer<100) {
+				 obj.data.startTimer = obj.data.startTimer +0.25
+			}
 			obj.data.status="wfp";
 		}
 		
-		sendStatus=obj.data.status
-		obj.messageMembers('roomStatus', sendStatus, "status" );
+		
 	}
+	
+	sendStatus=obj.data.status
+		obj.messageMembers('roomStatus', sendStatus, "status" );
 		
 		var data={}
 		data[0]= obj.getMembers().length;
@@ -191,9 +207,11 @@ function update(obj) {
 	obj.messageMembers('data', data );
 	
 	obj.messageMembers('roomSinners', obj.data.sinners);
-	 
-	 
+	 console.log("log: "+obj.getMembers(true));
+	 obj.messageMembers('roomMembers', obj.getMembers(true));
 	obj.messageMembers('global', obj.data.chatLog);
+		obj.messageMembers('timer', obj.data.startTimer);
+   
    
    //run 
    if(obj.data.initialized){
