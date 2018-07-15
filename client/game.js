@@ -4,6 +4,7 @@ var test='http://localhost:5000'
 
   var phase = 0;
    var counter = 0;
+   var round =0;
    var global={};
    var player={};
    var local=[];
@@ -27,8 +28,9 @@ cloak.configure({
    messages: {
     data: function(arg) {
       userCount=arg[0];
-	  phase=arg[1]
-	  counter=arg[2]
+	  phase=arg[1];
+	  counter=arg[2];
+	  round=arg[3];
     },
 	
 	global: function(arg) {
@@ -41,8 +43,16 @@ cloak.configure({
     },
 	selfSinner: function(arg) {
       theSinner=arg
+	  
 	 
     },
+	
+	mate: function(arg) {
+      theSinner.mate=arg
+	  
+	 
+    },
+	
 	
 	updateSelf: function(arg) {
       player=arg
@@ -212,11 +222,11 @@ if ( roomData.status=="running") {
 
 
 ctx.fillText("The Sinners:",550,50);
-
+//roster
 	  for (i = 0; i < players.length; i++) {
 	
 ctx.fillStyle = "#FFFFFF";	
-ctx.fillText(players[i].name,550,50+25*i+25);
+ctx.fillText("["+i+"]: "+players[i].name+" X "+players[i].votes,550,50+25*i+25);
 	
 }
 }
@@ -239,7 +249,7 @@ ctx.fillStyle = "#000000";
 	  if ( roomData.status=="running") {
 		  
 		  ctx.fillStyle = chatFontColor;	
-ctx.fillText('Sinners:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
+ctx.fillText('Round: '+ round + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
 	  } else if  (roomData.status=="starting") {
 		  ctx.fillText('Starting in: '+ startTimer , 25, 50);
 	  
@@ -247,7 +257,9 @@ ctx.fillText('Sinners:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 
 	  }
 	  else {
 		  ctx.fillStyle = "#000000";	
-		  ctx.fillText('Users Connected:' +userCount + " Waiting for more players." , 25, 50);
+		  ctx.fillText('Users Connected:' +userCount + " Waiting for at least " + (8-userCount)+ " more players." , 25, 50);
+		  ctx.fillText('The game will only start when the player count is even.', 25, 75);
+		  
 		  
 	  }
 
