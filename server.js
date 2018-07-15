@@ -69,13 +69,23 @@ room[num].data.phase=0;
 room[num].data.counter=0;
 room[num].data.chatLog=[];
 room[num].data.sinners=[];
+room[num].data.sinnersPublic=[];
 room[num].data.initialized=false;
 room[num].data.startTimer=100;
 room[num].data.roomnumber=num;
 
+room[num].data.roster=[];
+room[num].data.teams=[];
 }
 
 
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
 
 
 
@@ -88,7 +98,16 @@ cloak.configure({
 		
 		var name= user.name;
       user.getRoom().data.chatLog.push({name,arg}); 
-	  
+	 
+    },
+	
+	soulSend: function(arg, user) {
+		
+		var find = user.getRoom().data.sinners.find(x => x.id === user.id );
+		var target = find.mate.id;
+		var name = user.name;
+		var message = {name,arg};
+       cloak.getUser(target).message("soulcomm",message);
     },
 	command: function(arg, user) {
 		
@@ -197,7 +216,7 @@ function update(obj) {
 	//intialized
 	if (!obj.data.initialized)
 	{
-		if(obj.getMembers().length % 2  == 0 && obj.getMembers().length >= 2){
+		if(obj.getMembers().length % 2  == 0 && obj.getMembers().length >= 4){
 			
 	     obj.data.status="starting";
 		 
@@ -209,8 +228,9 @@ function update(obj) {
 			for (i = 0; i < obj.getMembers().length; i++) {
 				var id= adding[i].id
 				var name= adding[i].name
-			 obj.data.sinners.push({id,name})
-			 
+			 obj.data.sinners.push({id,name,'slot':i})	
+			 obj.data.sinnersPublic.push({id,name,'slot':i})			 			 
+
 			 
 			};
 			
@@ -224,6 +244,59 @@ function update(obj) {
 		
 			obj.data.sinners[ randint(0,(obj.data.sinners.length-1))].role=rolelist[0];
 			
+			var numbers=[]
+			for (i = 0; i < obj.data.sinnersPublic.length; i++) {
+			
+			 numbers.push(obj.data.sinnersPublic[i].slot)
+			 
+			 
+			};
+			
+			numbers=shuffle(numbers);
+			
+			
+			for (i = 0; i < obj.data.sinnersPublic.length; i++) {
+			
+			 obj.data.sinnersPublic[i].slot=numbers[i];
+			 
+			 
+			};
+			
+			for (i = 0; i < obj.data.sinnersPublic.length; i++) {
+			
+			 obj.data.roster[obj.data.sinnersPublic[i].slot]=obj.data.sinnersPublic[i];
+			 
+			 
+			};
+			
+			var teamgen=[]
+			for (i = 0; i < obj.data.sinnersPublic.length; i++) {
+			
+			 teamgen.push(obj.data.sinnersPublic[i].slot)
+			 
+			 
+			};
+			
+			teamgen=shuffle(teamgen);
+			for (i = 0; i < teamgen.length; i++) {
+		    obj.data.teams[Math.floor(i/2)]=[];
+			}
+			
+			for (i = 0; i < teamgen.length; i++) {
+		   
+			obj.data.teams[Math.floor(i/2)].push(teamgen[i]);
+			
+			}
+			
+		    for (i=0;i<obj.data.teams.length;i++) {
+			 
+		   obj.data.sinners[obj.data.teams[i][0]].mate=obj.data.sinnersPublic[obj.data.teams[i][1]];
+		   obj.data.sinners[obj.data.teams[i][1]].mate=obj.data.sinnersPublic[obj.data.teams[i][0]];
+		   }
+		
+			
+			
+			 
 			 
 			 obj.data.status="running";
 			 obj.data.initialized=true;
@@ -249,8 +322,9 @@ function update(obj) {
 		data[2]=obj.data.counter
 	obj.messageMembers('data', data );
 	
-	obj.messageMembers('roomSinners', obj.data.sinners);
+	obj.messageMembers('roomSinners', obj.data.roster);
 	
+	obj.messageMembers('roster', obj.data.roster);
 	 obj.messageMembers('roomMembers', obj.getMembers(true));
 	obj.messageMembers('global', obj.data.chatLog);
 		obj.messageMembers('timer', obj.data.startTimer);
@@ -259,6 +333,8 @@ function update(obj) {
    //run 
    if(obj.data.initialized){
 	   
+	  
+		
 	   for (i=0;i< obj.getMembers(true).length;i++) {
 	   var id = obj.getMembers(true)[i].id;
 	 cloak.getUser(id).message('selfSinner', obj.data.sinners[i]);
@@ -283,7 +359,7 @@ function update(obj) {
 
 setInterval(function() {
 	
-	console.log(cloak.roomCount()+" rooms running.");
+
 	
 
 }, 2000);

@@ -12,7 +12,14 @@ var test='http://localhost:5000'
    var connected=[]
    var startTimer=0;
    var theSinner={};
+   var screen=0;
+   var chatScreen=0;
+   var soulcomm=[];
+   var chatColor="#c7f2bc";
+   var chatFontColor="#000000";
    
+   
+  
 cloak.configure({
 
   // You'll add stuff here later.
@@ -26,6 +33,10 @@ cloak.configure({
 	
 	global: function(arg) {
       global=arg
+	 
+    },
+	soulcomm: function(arg) {
+      soulcomm.push(arg);
 	 
     },
 	selfSinner: function(arg) {
@@ -117,8 +128,16 @@ if ( msg.charAt(0)=="/") {
 }
  else
 {
+if(chatScreen==0) {	
 cloak.message('publicTxt', msg);
-local.push("not connected"); 
+}
+if(chatScreen==1) {
+	var name = theSinner.name
+soulcomm.push({name,'arg':msg});
+cloak.message('soulSend', msg);	
+}
+
+
 }
 //Set
 $('#input').val("");
@@ -128,17 +147,44 @@ $('#input').val("");
     }
 });
 
+var button1 = {
+     x:900,
+    y:550,
+    width:200,
+    height:100,
+	text:"Soul Communication",
+	font:"22px serif",
+	fontcolor:"#000000",
+	color:"#FFFFFF"
+	
+};
+
+function drawButton(btn) {
+context.fillStyle = btn.color;
+	context.fillRect(btn.x,btn.y,btn.width,btn.height);
+	context.fillStyle = btn.fontcolor;
+	context.font = btn.font;
+	context.fillText(btn.text,btn.x+10,btn.y+50);
+	
+
+	}
+
 setInterval(function() {
   //main
    context.fillStyle = "#FFFFFF";
    context.font = '48px serif';
     if ( roomData.status=="running") {
    context.fillText("You are "+theSinner.role.name,25,50);
+   context.font = '24px serif';
+    context.fillText("You are bound to "+theSinner.mate.name+" by the strings of fate",25,600);
+	
+	drawButton(button1);
+	
 	}
 	 
    
   //chatbox
-    ctx.fillStyle = "#c7f2bc";
+    ctx.fillStyle = chatColor;
 ctx.fillRect(0,0,1400,800);
 
     ctx.fillStyle = "#000000";
@@ -163,6 +209,8 @@ ctx.fillText('localuser :' +local[i],25,200+25*i);
   else {
 ctx.fillStyle = "#FFFFFF";	
 if ( roomData.status=="running") { 
+
+
 ctx.fillText("The Sinners:",550,50);
 
 	  for (i = 0; i < players.length; i++) {
@@ -189,6 +237,8 @@ ctx.fillStyle = "#000000";
 	  
 	  
 	  if ( roomData.status=="running") {
+		  
+		  ctx.fillStyle = chatFontColor;	
 ctx.fillText('Sinners:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 50);
 	  } else if  (roomData.status=="starting") {
 		  ctx.fillText('Starting in: '+ startTimer , 25, 50);
@@ -196,24 +246,69 @@ ctx.fillText('Sinners:' +userCount + ' Phase: '+phase+' Time:'+ (600-counter) , 
 		  
 	  }
 	  else {
-		  
+		  ctx.fillStyle = "#000000";	
 		  ctx.fillText('Users Connected:' +userCount + " Waiting for more players." , 25, 50);
 		  
 	  }
 
-
+if(chatScreen==0){
 for (i = 0; i < global.length; i++) {
-	
-	if (typeof global[i] == "undefined" ) {
-		ctx.fillText("error",25,100+25*i);
-	} 
-	else 
-	{
+	 ctx.fillStyle = chatFontColor;
 ctx.fillText(global[i].name +' : '+global[i].arg,25,100+25*i);
-	}
+	
+} 
 }
+else {
+//soulcomm	
+	for (i = 0; i < soulcomm.length; i++) {
+	
+	 ctx.fillStyle = chatFontColor;
+ctx.fillText(soulcomm[i].name +' : '+soulcomm[i].arg,25,100+25*i);
+	
+} 
+	
+}
+
   }
 
 }, 100);
+
+
+ function getMousePos(canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+    };
+}
+
+function isInside(pos, rect){
+    return pos.x > rect.x && pos.x < rect.x+rect.width && pos.y < rect.y+rect.height && pos.y > rect.y
+}
+
+
+
+canvas.addEventListener('click', function(evt) {
+    var mousePos = getMousePos(canvas, evt);
+
+    if (isInside(mousePos,button1) && roomData.status=="running") {
+        if(chatScreen==0) {
+			chatScreen=1;
+			button1.text="Public Chat";
+			chatColor="#5e0303"
+			chatFontColor="#FFFFFF"
+			button1.font="28px serif"
+			
+			
+		} else {
+			chatScreen=0;
+			button1.font="22px serif"
+			button1.text="Soul Communication"
+			chatColor="#c7f2bc"
+			chatFontColor = "#000000"
+		}
+    }
+	
+}, false);
 
 
