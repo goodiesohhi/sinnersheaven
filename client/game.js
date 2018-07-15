@@ -118,8 +118,6 @@ var txt = document.getElementById("txtcanvas");
 var ctx = txt.getContext("2d");
 
 
-  context.fillStyle = "#000000";
-context.fillRect(0,0,1400,800);
 
 $(document).keypress(function(e) {
 	
@@ -139,12 +137,17 @@ if ( msg.charAt(0)=="/") {
  else
 {
 if(chatScreen==0) {	
+if(theSinner.state!="dead") {
 cloak.message('publicTxt', msg);
 }
+}
 if(chatScreen==1) {
+	if(theSinner.state!="dead") {
 	var name = theSinner.name
 soulcomm.push({name,'arg':msg});
-cloak.message('soulSend', msg);	
+cloak.message('soulSend', msg);
+	}
+	
 }
 
 
@@ -181,12 +184,40 @@ context.fillStyle = btn.color;
 
 setInterval(function() {
   //main
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, txt.width, txt.height);
+  if (theSinner.state!="dead") {
+  context.fillStyle = "#000000";
+context.fillRect(0,0,1400,800);
+  } else {
+ context.fillStyle = "#FF0000";
+context.fillRect(0,0,1400,800);
+  }
+
    context.fillStyle = "#FFFFFF";
    context.font = '48px serif';
+   
     if ( roomData.status=="running") {
-   context.fillText("You are "+theSinner.role.name,25,50);
+		
+		if (phase==0) {
+			if(theSinner.state=="dead") {
+context.fillText("You are DECEASED. Please await JUDGEMENT.",25,50);
+			} else {
+  context.fillText("You are "+theSinner.role.name,25,50);
+  
+			}
+  
+  
+   } else if (phase==1) {
+	   context.fillText("Time for the Cleansing....",25,50);
+   }
+   
    context.font = '24px serif';
+   if (phase==0) {
     context.fillText("You are bound to "+theSinner.mate.name+" by the strings of fate",25,600);
+   } else if (phase==1) {
+	   context.fillText("/c [sinnerslotnumber] to condemn a sinner." ,25,600);
+   }
 	
 	drawButton(button1);
 	
@@ -226,8 +257,36 @@ ctx.fillText("The Sinners:",550,50);
 	  for (i = 0; i < players.length; i++) {
 	
 ctx.fillStyle = "#FFFFFF";	
+if (players[i].state=="dead") {
+	if (phase==1) {
+		if (theSinner.state!="dead") {
 ctx.fillText("["+i+"]: "+players[i].name+" X "+players[i].votes,550,50+25*i+25);
+		} else {
+ctx.fillText("["+i+"]: "+players[i].name,550,50+25*i+25);
+		}
+	} 
 	
+	if (phase!=1) {
+ctx.fillText("["+i+"]: "+players[i].name,550,50+25*i+25);
+	}
+
+var text = ctx.measureText("["+i+"]: "+players[i].name);
+ctx.fillRect(550, 50+25*i+(Math.floor(20)), text.width, 2);
+} else {
+	
+	if (phase==1) {
+		if (theSinner.state!="dead") {
+ctx.fillText("["+i+"]: "+players[i].name+" X "+players[i].votes,550,50+25*i+25);
+		} else {
+ctx.fillText("["+i+"]: "+players[i].name,550,50+25*i+25);
+		}
+	} 
+	
+	if (phase!=1) {
+ctx.fillText("["+i+"]: "+players[i].name,550,50+25*i+25);
+	}
+	
+}
 }
 }
 else
@@ -282,6 +341,9 @@ ctx.fillText(soulcomm[i].name +' : '+soulcomm[i].arg,25,100+25*i);
 }
 
   }
+  
+  
+  
 
 }, 100);
 

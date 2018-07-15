@@ -59,7 +59,7 @@ function randint(min, max) {
 } 
 
 server.listen(PORT, function() {
-  console.log('listening');
+ 
 });
 
 function createroom(num) {
@@ -104,13 +104,18 @@ cloak.configure({
 	
 
 	soulSend: function(arg, user) {
-		
 		var find = user.getRoom().data.sinners.find(x => x.id === user.id );
+		
+		if(find.state=="alive") {
+		
 		var target = find.mate.id;
 		var name = user.name;
 		var message = {name,arg};
 		if (find.mate.state=="alive") {
+			if(typeof cloak.getUser(target).message == 'function')  {
        cloak.getUser(target).message("soulcomm",message);
+			}
+		}
 		}
     },
 	command: function(arg, user) {
@@ -140,20 +145,20 @@ cloak.configure({
 			}
 		}
 		} else {
-			console.log("command recieved");
-			console.log("target: "+parseInt(words[1]));
+			
+			
 			if (user.getRoom().data.status=="running"&&user.getRoom().data.phase==1) {
-				console.log("phase cleanse");
+				
 			if (words[0]=="/c") {
-				console.log("command cleanse");
-			if (user.getRoom().data.sinners.find(x => x.id === user.id ).voted==false) {
-				console.log("voted false");
+			
+			if (user.getRoom().data.sinners.find(x => x.id === user.id ).voted==false && user.getRoom().data.sinners.find(x => x.id === user.id ).state!="dead") {
+				
 		
 		if (user.getRoom().data.sinnersPublic[words[1]].state=="alive") {
-			console.log("target alive");
+		
 			
 		var target = user.getRoom().data.sinners.find(x => x.slot === parseInt(words[1]));
-		console.log("target: "+target.name);
+	
 		target.votes++;
 		user.getRoom().data.sinners.find(x => x.id === user.id ).voted=true
 		} 
@@ -392,9 +397,12 @@ function update(obj) {
 		send.state=obj.data.sinners[i].state;
 		
 	
-		
+if(typeof cloak.getUser(found.id).message == 'function') {	
+
  cloak.getUser(found.id).message('selfSinner', send);
+ 
   cloak.getUser(found.id).message('mate', mate);
+}
 
 	}
 		
@@ -419,7 +427,7 @@ function update(obj) {
 	   
 	   obj.data.counter++;
 	   if (obj.data.counter>= 600)  {
-		   console.log("phase 1");
+		   
 		   obj.data.phase=1;
 		   obj.data.counter=0;
 	   }
@@ -435,7 +443,7 @@ function update(obj) {
 		   
 		   if (obj.data.cleanseTarget=="none") {
 		for (i=0;i<obj.data.sinners.length;i++) {
-			if(obj.data.sinners[i].votes>=Math.floor(obj.data.sinners.filter(function(v){return v.state=="alive"}).length/2)) {
+			if(obj.data.sinners[i].votes>Math.floor(obj.data.sinners.filter(function(v){return v.state=="alive"}).length/2)) {
 				
 				obj.data.cleanseTarget = obj.data.sinners[i];
 				
