@@ -18,7 +18,7 @@ var test='http://localhost:5000'
    var soulcomm=[];
    var chatColor="#c7f2bc";
    var chatFontColor="#000000";
-   
+   var matchup=[]
    
   
 cloak.configure({
@@ -46,6 +46,19 @@ cloak.configure({
 	  
 	 
     },
+	
+	oracleMatchup: function(arg) {
+      matchup=arg
+	  
+	 
+    },
+	
+	matchup: function(arg) {
+      matchup=arg
+	  
+	 
+    },
+	
 	
 	mate: function(arg) {
       theSinner.mate=arg
@@ -138,7 +151,11 @@ if ( msg.charAt(0)=="/") {
 {
 if(chatScreen==0) {	
 if(theSinner.state!="dead") {
+	if (phase==2) {
+	cloak.message('battleTxt', msg);
+	} else {
 cloak.message('publicTxt', msg);
+	}
 }
 }
 if(chatScreen==1) {
@@ -216,8 +233,16 @@ context.fillText("You are DECEASED. Please await JUDGEMENT.",25,50);
    if (phase==0) {
     context.fillText("You are bound to "+theSinner.mate.name+" by the strings of fate",25,600);
    } else if (phase==1) {
-	   context.fillText("/c [sinnerslotnumber] to condemn a sinner." ,25,600);
+	   if (theSinner.role.id==1) {
+		   
+		   
+	   context.fillText("DESTINY calls! "+ matchup[0][0].name+ " and " + matchup[0][1].name + " will fight "+ matchup[1][0].name+ " and "+matchup[1][1].name + "tonight" ,25,600);
+	   } else {
+	   
+	    context.fillText("/c [sinnerslotnumber] to condemn a sinner." ,25,600);
+	   }
    }
+	
 	
 	drawButton(button1);
 	

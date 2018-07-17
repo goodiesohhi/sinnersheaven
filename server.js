@@ -68,6 +68,7 @@ room[num].data.round=0;
 room[num].data.phase=0;
 room[num].data.counter=0;
 room[num].data.chatLog=[];
+room[num].data.battleLog=[];
 room[num].data.sinners=[];
 room[num].data.sinnersPublic=[];
 room[num].data.initialized=false;
@@ -77,6 +78,8 @@ room[num].data.roomnumber=num;
 room[num].data.roster=[];
 room[num].data.teams=[];
 room[num].data.cleanseTarget = "none";
+room[num].data.resolves=[];
+room[num].data.match=[];
 }
 
 
@@ -99,6 +102,27 @@ cloak.configure({
 		
 		var name= user.name;
       user.getRoom().data.chatLog.push({name,arg}); 
+	 
+    },
+	
+	 battleTxt: function(arg, user) {
+		
+		var name= user.name;
+		var id=user.id;
+		var matchup=[];
+	  
+	matchup[0] = [user.getRoom().data.sinnersPublic[ user.getRoom().data.match[0][0]],user.getRoom().data.sinnersPublic[ user.getRoom().data.match[0][1]]];
+	matchup[1] = [user.getRoom().data.sinnersPublic[ user.getRoom().data.match[1][0]],user.getRoom().data.sinnersPublic[ user.getRoom().data.match[1][1]]];
+		
+		console.log("userid: "+id);
+		console.log("id1: "+matchup[0][0].id);
+		console.log("id2: "+matchup[0][1].id);
+		console.log("id3: "+matchup[1][0].id);
+		console.log("id4: "+matchup[1][1].id);
+		
+		if (id==matchup[0][0].id||id==matchup[0][1].id||id==matchup[1][0].id||id==matchup[1][1].id) {
+      user.getRoom().data.battleLog.push({name,arg}); 
+		}
 	 
     },
 	
@@ -233,6 +257,17 @@ createroom(4)
 
 createroom(5)
 
+//generic
+function messageRole (roleid,message,data,obj) {
+	var targets = obj.data.sinners.filter(function(v){return v.role.id==roleid})
+	for (i=0;i<targets.length;i++) {
+		targetID=targets[i].id;
+		if(typeof cloak.getUser(targetID).message == 'function')  {
+       cloak.getUser(targetID).message(message,data);
+			}
+	}
+	
+}
 	
 	
 	
@@ -369,12 +404,20 @@ function update(obj) {
 	
 	
 	 obj.messageMembers('roomMembers', obj.getMembers(true));
-	obj.messageMembers('global', obj.data.chatLog);
+	 
+	
 		obj.messageMembers('timer', obj.data.startTimer);
    
    
    //run 
    if(obj.data.initialized){
+	   
+	   if (obj.data.phase==2) {
+		   console.log(obj.data.battleLog);
+	   obj.messageMembers('global', obj.data.battleLog);
+	   } else {
+	 obj.messageMembers('global', obj.data.chatLog);
+	   }
 	   
 	  for (i=0;i<obj.data.sinners.length;i++) {
 		var user = obj.data.sinners[i];
@@ -408,7 +451,7 @@ if(typeof cloak.getUser(found.id).message == 'function') {
 		
 	
 	
-	   //phase1
+	   //phase 0
    if(obj.data.phase==0)  {
 	   for (i = 0; i < obj.data.sinners.length; i++) {
 				
@@ -419,6 +462,8 @@ if(typeof cloak.getUser(found.id).message == 'function') {
 			 
 			}
 			
+			obj.data.battleLog=[];
+			
 			
 			
 			
@@ -428,13 +473,44 @@ if(typeof cloak.getUser(found.id).message == 'function') {
 	   obj.data.counter++;
 	   if (obj.data.counter>= 600)  {
 		   
+		   obj.data.match=[];
+		   var hat=obj.data.teams;
+		   var pickone=randint(0,(obj.data.teams.length-1));
+		   var picktwo;
+		   
+		   
+		   var sentinel=false;
+		   while (!sentinel) {
+			   picktwo = randint(0,(obj.data.teams.length-1));
+			   if (picktwo == pickone) {
+				   sentinel=false;
+			   } else {
+				   sentinel=true;
+			   }
+		   }
+		   obj.data.match[0]=  hat[pickone];
+		   obj.data.match[1]=  hat[picktwo];
+		   
+		   
+	
+			   
+		   
+		   
 		   obj.data.phase=1;
 		   obj.data.counter=0;
-	   }
+	   
+   }
    }
    
     if(obj.data.phase==1)  {
 		
+		var oracleData = [];
+		
+		oracleData[0] = [obj.data.sinnersPublic[ obj.data.match[0][0]],obj.data.sinnersPublic[ obj.data.match[0][1]]];
+	    oracleData[1] = [obj.data.sinnersPublic[ obj.data.match[1][0]],obj.data.sinnersPublic[ obj.data.match[1][1]]];
+		
+		
+		messageRole(1,"oracleMatchup",oracleData,obj);
 		
 	   if(obj.data.round==0) {
 		   //skip cleansing
@@ -474,8 +550,19 @@ if(typeof cloak.getUser(found.id).message == 'function') {
    }
    
    if(obj.data.phase==2) {
-	   obj.data.round++;
+	   
+	   
+	    obj.data.counter++;
+	      if (obj.data.counter>= 600)  {
+		      obj.data.round++;
 	   obj.data.phase=0;
+		   
+	   } else {
+		   
+		
+		
+		   }
+	 
    }
 	}
 	   
@@ -498,43 +585,47 @@ setInterval(function() {
 var roles={}
 //Antichrist
 roles.ac={}
+roles.ac.id=0;
 roles.ac.name="The Antichrist"
 roles.ac.immunity=2
 //Oracle
 roles.oc={}
+roles.oc.id=1;
 roles.oc.name="The Oracle"
 roles.oc.immunity=0
 //changeling
 roles.cg={}
+roles.cg.id=2;
 roles.cg.name="Changeling"
 roles.cg.immunity=0
 //Medium
 roles.me={}
+roles.me.id=3;
 roles.me.name="The Medium"
 roles.me.immunity=0
 //Detonator
 roles.dt={}
+roles.dt.id=4;
 roles.dt.name="The Detonator"
 roles.dt.immunity=0
 
 //Lunatic
 roles.lu={}
+roles.lu.id=5;
 roles.lu.name="The Lunatic"
 roles.lu.immunity=0
 
 //Purger
 roles.pg={}
+roles.pg.id=6;
 roles.pg.name="The Purger"
 roles.pg.immunity=0
 
-//Purger
-roles.pg={}
-roles.pg.name="The Purger"
-roles.pg.immunity=0
 
 //Judicator
 
 roles.jd={}
+roles.jd.id=7;
 roles.jd.name="The Judicator"
 roles.jd.immunity=0
 
