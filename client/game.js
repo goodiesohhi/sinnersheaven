@@ -283,7 +283,7 @@ if(typeof theSinner.role != 'undefined') {
  //  context.fillText( "name the role",650,50);
  
  
- 
+ if (theSinner.lives>=1) {
  for (i=0;i<theSinner.lives;i++) {
 	 
 	 if (Math.floor(interval)%2==0) {
@@ -292,6 +292,7 @@ if(typeof theSinner.role != 'undefined') {
      context.drawImage(heart1, 645+50*i, 60); 
 	 }
 	 
+ }
  }
  
 

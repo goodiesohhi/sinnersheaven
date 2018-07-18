@@ -385,7 +385,14 @@ function update(obj) {
 			 	obj.data.sinners[i].votes=0;
 			    obj.data.sinners[i].voted=false;
 				obj.data.sinners[i].state="alive";
+				if (obj.data.sinners[i].role.id==0) {
+					obj.data.sinners[i].lives=0;
+				} else if (obj.data.sinners[i].role.id==9) {
+				 obj.data.sinners[i].lives=9;
+				}
+				else {
 				obj.data.sinners[i].lives=3;
+				}
 			 
 			}
 			
@@ -673,7 +680,10 @@ if(typeof cloak.getUser(found.id).message == 'function') {
 				 for (i=0;i<obj.data.sinners.length;i++) {
 					 if (obj.data.sinners[i].lives <= 0 ) {
 						 
+						 if(obj.data.sinners[i].role.id!=0) {
+						 
 						 obj.data.sinners[i].state="dead";
+						 }
 						 
 					 }
 					 
@@ -766,6 +776,27 @@ roles.jd.name="the Judicator"
 roles.jd.immunity=0
 roles.jd.desc =  "placeholder.lore"
 
+
+
+
+//Traveler
+
+roles.tv={}
+roles.tv.id=8;
+roles.tv.name="the Traveler"
+roles.tv.immunity=0
+roles.tv.desc =  "placeholder.lore"
+
+
+//Cat
+
+roles.cat={}
+roles.cat.id=9;
+roles.cat.name="a Cat"
+roles.cat.immunity=0
+roles.cat.desc =  "A Cat. Has 9 lives. (Obviously.)"
+
+
 var rolelist=[]
 rolelist[0]=roles.ac;
 rolelist[1]=roles.oc;
@@ -775,7 +806,8 @@ rolelist[4]=roles.dt;
 rolelist[5]=roles.lu;
 rolelist[6]=roles.pg;
 rolelist[7]=roles.jd;
-
+rolelist[8]=roles.tv;
+rolelist[9]=roles.cat;
 
 
 
