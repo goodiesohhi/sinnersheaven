@@ -733,7 +733,7 @@ roles.oc={}
 roles.oc.id=1;
 roles.oc.name="the Oracle"
 roles.oc.immunity=0
-roles.oc.desc = "Plagued by visions uninvited, you saw doom but were powerless against it. Your curse allows you to see conflict before it happens."
+roles.oc.desc = "Plagued by visions uninvited, the Oracle saw doom but were powerless against it. Your curse allows you to see conflict before it happens."
 
 //changeling
 roles.cg={}
@@ -746,13 +746,13 @@ roles.me={}
 roles.me.id=3;
 roles.me.name="the Medium"
 roles.me.immunity=0
-roles.me.desc =  "placeholder.lore"
+roles.me.desc =  "Death comes to all. However, it favors some more than others. You may as well already be dead and that may be why you fear death the most. You are cursed with the voices of never ending torment"
 //Detonator
 roles.dt={}
 roles.dt.id=4;
 roles.dt.name="the Detonator"
 roles.dt.immunity=0
-roles.dt.desc =  "placeholder.lore"
+roles.dt.desc =  "Everything must burn. Though the ones who wronged you have long been naught but ashes. None will not rest until the gates of hell be brought forth in a fiery inferno. Your MERCY belies fiery doom"
 
 //Lunatic
 roles.lu={}

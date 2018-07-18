@@ -227,7 +227,7 @@ var resButton1 = {
     y:550,
     width:200,
     height:100,
-	text:"ATTACK",
+	text:"CRUELTY",
 	font:"22px serif",
 	fontcolor:"#FFFFFF",
 	color:"#FF0000"
@@ -239,7 +239,7 @@ var resButton0 = {
     y:450,
     width:200,
     height:100,
-	text:"ABSTAIN",
+	text:"MERCY",
 	font:"22px serif",
 	fontcolor:"#FFFFFF",
 	color:"#00FF00"
