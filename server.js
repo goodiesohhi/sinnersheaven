@@ -32,6 +32,18 @@ app.get('/client/game.js', function (req, res) {
   res.sendFile(path.join(__dirname, '/client/game.js'))
 })
 
+app.get('/public/heart0.png', function (req, res) {
+  // render/ejs is now easier to use since
+  // sendFile has security restrictions on relative pathing
+  res.sendFile(path.join(__dirname, '/public/heart0.png'))
+})
+
+app.get('/public/heart1.png', function (req, res) {
+  // render/ejs is now easier to use since
+  // sendFile has security restrictions on relative pathing
+  res.sendFile(path.join(__dirname, '/public/heart1.png'))
+})
+
 app.get('/client/lib/underscore-min.js', function (req, res) {
   // render/ejs is now easier to use since
   // sendFile has security restrictions on relative pathing
@@ -78,7 +90,7 @@ room[num].data.roomnumber=num;
 room[num].data.roster=[];
 room[num].data.teams=[];
 room[num].data.cleanseTarget = "none";
-room[num].data.resolves=[];
+room[num].data.resolution=[];
 room[num].data.match=[];
 }
 
@@ -114,16 +126,72 @@ cloak.configure({
 	matchup[0] = [user.getRoom().data.sinnersPublic[ user.getRoom().data.match[0][0]],user.getRoom().data.sinnersPublic[ user.getRoom().data.match[0][1]]];
 	matchup[1] = [user.getRoom().data.sinnersPublic[ user.getRoom().data.match[1][0]],user.getRoom().data.sinnersPublic[ user.getRoom().data.match[1][1]]];
 		
-		console.log("userid: "+id);
-		console.log("id1: "+matchup[0][0].id);
-		console.log("id2: "+matchup[0][1].id);
-		console.log("id3: "+matchup[1][0].id);
-		console.log("id4: "+matchup[1][1].id);
+		
 		
 		if (id==matchup[0][0].id||id==matchup[0][1].id||id==matchup[1][0].id||id==matchup[1][1].id) {
       user.getRoom().data.battleLog.push({name,arg}); 
 		}
 	 
+    },
+	
+		 resolution: function(arg, user) {
+		
+		console.log("command recieved");
+		var name= user.name;
+		var id=user.id;
+		var matchup=[];
+	    var sinner = user.getRoom().data.sinners.find(x => x.id === user.id );
+		
+		var arg2 = arg;
+		console.log("sinnerid: "+sinner.id);
+	    console.log("userid: "+user.id);
+	
+	
+	matchup[0] = [user.getRoom().data.sinnersPublic[ user.getRoom().data.match[0][0]],user.getRoom().data.sinnersPublic[ user.getRoom().data.match[0][1]]];
+	matchup[1] = [user.getRoom().data.sinnersPublic[ user.getRoom().data.match[1][0]],user.getRoom().data.sinnersPublic[ user.getRoom().data.match[1][1]]];
+		
+
+	
+		if (id==matchup[0][0].id||id==matchup[0][1].id) {
+			console.log("phase1");
+			if (sinner.voted==false) {
+					console.log(arg2);
+				if (arg2=="1") {
+					
+						console.log("final");
+					sinner.voted=true;
+					if (sinner.mate.state=="dead") {
+					 user.getRoom().data.resolution[0]==2;
+					} else {
+      user.getRoom().data.resolution[0]++;
+					}
+				} else {
+					sinner.voted=true;
+					
+				}
+			}
+		}
+		 
+		 if (id==matchup[1][0].id||id==matchup[1][1].id) {
+			 	console.log("phase1");
+      if (sinner.voted==false) {
+		  	console.log(arg2);
+    if (arg2=="1") {
+			console.log("final");
+				console.log(arg2);
+					sinner.voted=true;
+     if (sinner.mate.state=="dead") {
+					 user.getRoom().data.resolution[1]==2;
+					} else {
+      user.getRoom().data.resolution[1]++;
+					}
+				} else {
+					sinner.voted=true;
+					
+				}
+			}
+		}
+		
     },
 	
 
@@ -214,12 +282,18 @@ cloak.configure({
 	
 	
 	
+	
   },
   room: {
 	  pulse: function() {
 
 		  update(this)
 		  
+	  },
+	  
+	  memberLeaves: function() {
+ 
+		  //this.data.sinners.find(x => x.id === arg.id ).lives= -666;
 	  },
 	  
 	  
@@ -311,6 +385,7 @@ function update(obj) {
 			 	obj.data.sinners[i].votes=0;
 			    obj.data.sinners[i].voted=false;
 				obj.data.sinners[i].state="alive";
+				obj.data.sinners[i].lives=3;
 			 
 			}
 			
@@ -413,7 +488,7 @@ function update(obj) {
    if(obj.data.initialized){
 	   
 	   if (obj.data.phase==2) {
-		   console.log(obj.data.battleLog);
+		 
 	   obj.messageMembers('global', obj.data.battleLog);
 	   } else {
 	 obj.messageMembers('global', obj.data.chatLog);
@@ -438,6 +513,7 @@ function update(obj) {
 		send.id=obj.data.sinners[i].id;
 		send.votes=obj.data.sinners[i].votes;
 		send.state=obj.data.sinners[i].state;
+		send.lives=obj.data.sinners[i].lives;
 		
 	
 if(typeof cloak.getUser(found.id).message == 'function') {	
@@ -495,9 +571,9 @@ if(typeof cloak.getUser(found.id).message == 'function') {
 	
 			   
 		   
-		   
+		    obj.data.counter=0;
 		   obj.data.phase=1;
-		   obj.data.counter=0;
+		  
 	   
    }
    }
@@ -514,6 +590,8 @@ if(typeof cloak.getUser(found.id).message == 'function') {
 		
 	   if(obj.data.round==0) {
 		   //skip cleansing
+		   	obj.data.resolution[0]=0;
+		obj.data.resolution[1]=0;
 		   obj.data.phase=2;
 	   } else {
 		   
@@ -536,8 +614,20 @@ if(typeof cloak.getUser(found.id).message == 'function') {
 			obj.data.cleanseTarget.state="dead";
 			obj.data.cleanseTarget ="none";
 		}  
+		  for (i = 0; i < obj.data.sinners.length; i++) {
+				
+			 	obj.data.sinners[i].votes=0;
+			    obj.data.sinners[i].voted=false;
+				
+				
+			 
+			}
+			
+		obj.data.resolution[0]=0;
+		obj.data.resolution[1]=0;
+		  obj.data.counter=0;
 		   obj.data.phase=2;
-		   obj.data.counter=0;
+		 
 		   
 	   } else {
 		   
@@ -550,16 +640,55 @@ if(typeof cloak.getUser(found.id).message == 'function') {
    }
    
    if(obj.data.phase==2) {
-	   
-	   
+	   var matchdata=[];
+	   	matchdata[0] = [obj.data.sinners[ obj.data.match[0][0]],obj.data.sinners[ obj.data.match[0][1]]];
+	    matchdata[1] = [obj.data.sinners[ obj.data.match[1][0]],obj.data.sinners[ obj.data.match[1][1]]];
+		
+		
+		obj.messageMembers('matchup', matchdata );
+		
 	    obj.data.counter++;
+		
 	      if (obj.data.counter>= 600)  {
+			  
+			  if( obj.data.resolution[0]>=1 ) {
+				  if (matchdata[1][0].lives>0) {
+				  matchdata[1][0].lives--;
+				  }
+				  if (matchdata[1][1].lives>0) {
+				  matchdata[1][1].lives--;	
+				  }				  
+				 }
+				 
+				   if( obj.data.resolution[1]>=1 ) {
+					   if (matchdata[0][0].lives>0) {
+				  matchdata[0][0].lives--;
+					   }
+					   if (matchdata[0][1].lives>0) {
+				  matchdata[0][1].lives--;	
+					   }
+				 }
+				 
+				 
+				 for (i=0;i<obj.data.sinners.length;i++) {
+					 if (obj.data.sinners[i].lives <= 0 ) {
+						 
+						 obj.data.sinners[i].state="dead";
+						 
+					 }
+					 
+					 
+				 }
+				 
+				
+			  
 		      obj.data.round++;
+			  obj.data.counter=0;
 	   obj.data.phase=0;
 		   
 	   } else {
 		   
-		
+		console.log(obj.data.resolution);
 		
 		   }
 	 
@@ -586,49 +715,56 @@ var roles={}
 //Antichrist
 roles.ac={}
 roles.ac.id=0;
-roles.ac.name="The Antichrist"
+roles.ac.name="the Antichrist"
 roles.ac.immunity=2
+roles.ac.desc =  "placeholder.lore"
 //Oracle
 roles.oc={}
 roles.oc.id=1;
-roles.oc.name="The Oracle"
+roles.oc.name="the Oracle"
 roles.oc.immunity=0
+roles.oc.desc = "Plagued by visions uninvited, you saw doom but were powerless against it. Your curse allows you to see conflict before it happens."
+
 //changeling
 roles.cg={}
 roles.cg.id=2;
-roles.cg.name="Changeling"
+roles.cg.name="the Changeling"
 roles.cg.immunity=0
+roles.cg.desc =  "placeholder.lore"
 //Medium
 roles.me={}
 roles.me.id=3;
-roles.me.name="The Medium"
+roles.me.name="the Medium"
 roles.me.immunity=0
+roles.me.desc =  "placeholder.lore"
 //Detonator
 roles.dt={}
 roles.dt.id=4;
-roles.dt.name="The Detonator"
+roles.dt.name="the Detonator"
 roles.dt.immunity=0
+roles.dt.desc =  "placeholder.lore"
 
 //Lunatic
 roles.lu={}
 roles.lu.id=5;
-roles.lu.name="The Lunatic"
+roles.lu.name="the Lunatic"
 roles.lu.immunity=0
+roles.lu.desc =  "placeholder.lore"
 
 //Purger
 roles.pg={}
 roles.pg.id=6;
-roles.pg.name="The Purger"
+roles.pg.name="the Purger"
 roles.pg.immunity=0
-
+roles.pg.desc =  "placeholder.lore"
 
 //Judicator
 
 roles.jd={}
 roles.jd.id=7;
-roles.jd.name="The Judicator"
+roles.jd.name="the Judicator"
 roles.jd.immunity=0
-
+roles.jd.desc =  "placeholder.lore"
 
 var rolelist=[]
 rolelist[0]=roles.ac;

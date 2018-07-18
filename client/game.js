@@ -20,7 +20,39 @@ var test='http://localhost:5000'
    var chatFontColor="#000000";
    var matchup=[]
    
+   var interval=0;
+   
   
+   
+      function wrapText(context, text, x, y, maxWidth, lineHeight) {
+        var words = text.split(' ');
+        var line = '';
+
+        for(var n = 0; n < words.length; n++) {
+          var testLine = line + words[n] + ' ';
+          var metrics = context.measureText(testLine);
+          var testWidth = metrics.width;
+          if (testWidth > maxWidth && n > 0) {
+            context.fillText(line, x, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+          }
+          else {
+            line = testLine;
+          }
+        }
+        context.fillText(line, x, y);
+      }
+      
+      
+  
+  //images
+  var heart0 = new Image();
+  heart0.src = "/public/heart0.png";
+  
+  var heart1 = new Image();
+  heart1.src = "/public/heart1.png";
+
 cloak.configure({
 
   // You'll add stuff here later.
@@ -177,6 +209,7 @@ $('#input').val("");
     }
 });
 
+//buttons
 var button1 = {
      x:900,
     y:550,
@@ -186,6 +219,30 @@ var button1 = {
 	font:"22px serif",
 	fontcolor:"#000000",
 	color:"#FFFFFF"
+	
+};
+
+var resButton1 = {
+     x:900,
+    y:550,
+    width:200,
+    height:100,
+	text:"ATTACK",
+	font:"22px serif",
+	fontcolor:"#FFFFFF",
+	color:"#FF0000"
+	
+};
+
+var resButton0 = {
+     x:900,
+    y:450,
+    width:200,
+    height:100,
+	text:"ABSTAIN",
+	font:"22px serif",
+	fontcolor:"#FFFFFF",
+	color:"#00FF00"
 	
 };
 
@@ -203,16 +260,50 @@ setInterval(function() {
   //main
   context.clearRect(0, 0, canvas.width, canvas.height);
   ctx.clearRect(0, 0, txt.width, txt.height);
+  
+  
+  
   if (theSinner.state!="dead") {
   context.fillStyle = "#000000";
-context.fillRect(0,0,1400,800);
+context.fillRect(0,0,1400,1000);
   } else {
  context.fillStyle = "#FF0000";
-context.fillRect(0,0,1400,800);
+context.fillRect(0,0,1400,1000);
   }
+  
+  //datasheet
+if(typeof theSinner.role != 'undefined') {
+	
+  context.font = '30px serif';
+      context.fillStyle = "#e5dc99";
+  context.fillRect(600,0,650,300);
+     context.fillStyle = "#000000";
+	 
+  context.fillText( theSinner.name + " " + theSinner.role.name,650,50);
+ //  context.fillText( "name the role",650,50);
+ 
+ 
+ 
+ for (i=0;i<theSinner.lives;i++) {
+	 
+	 if (Math.floor(interval)%2==0) {
+	 context.drawImage(heart0, 645+50*i, 60);
+	 } else {
+     context.drawImage(heart1, 645+50*i, 60); 
+	 }
+	 
+ }
+ 
+
+context.font = '20px serif';
+ //var text= "Plagued by visions uninvited, you saw doom but were powerless against it. Your curse allows you to see conflict before it happens."
+  wrapText(context, theSinner.role.desc , 625, 175, 550, 25);
+  
+}
+  
 
    context.fillStyle = "#FFFFFF";
-   context.font = '48px serif';
+   context.font = '32px serif';
    
     if ( roomData.status=="running") {
 		
@@ -220,17 +311,32 @@ context.fillRect(0,0,1400,800);
 			if(theSinner.state=="dead") {
 context.fillText("You are DECEASED. Please await JUDGEMENT.",25,50);
 			} else {
+				
+				if (round==0) {
   context.fillText("You are "+theSinner.role.name,25,50);
+				}
   
 			}
   
   
    } else if (phase==1) {
+	   	if(theSinner.state=="dead") {
+context.fillText("You are DECEASED. Please await JUDGEMENT.",25,50);
+			} else {
 	   context.fillText("Time for the Cleansing....",25,50);
+			}
+   }
+   
+   else if (phase==2) {
+	     	if(theSinner.state=="dead") {
+      context.fillText("You are DECEASED. Please await JUDGEMENT.",25,50);
+			} else {
+	  context.fillText("The Tribulations of Mortal Conflict..",25,50);
+			}
    }
    
    context.font = '24px serif';
-   if (phase==0) {
+   if (phase==0&&round==0) {
     context.fillText("You are bound to "+theSinner.mate.name+" by the strings of fate",25,600);
    } else if (phase==1) {
 	   if (theSinner.role.id==1) {
@@ -242,19 +348,33 @@ context.fillText("You are DECEASED. Please await JUDGEMENT.",25,50);
 	    context.fillText("/c [sinnerslotnumber] to condemn a sinner." ,25,600);
 	   }
    }
+   else if (phase==2) {
+if (theSinner.id==matchup[0][0].id||theSinner.id==matchup[0][1].id||theSinner.id==matchup[1][0].id||theSinner.id==matchup[1][1].id) {
+              context.fillText("You have been selected. How unlucky. Make your decision only after careful consideration." ,25,600);
+		} else {
+			
+			 context.fillText("Who will live? Who will DIE? How exciting!" ,25,600);
+		}
+   }
 	
-	
+	if (phase==2) {
+		if (theSinner.id==matchup[0][0].id||theSinner.id==matchup[0][1].id||theSinner.id==matchup[1][0].id||theSinner.id==matchup[1][1].id) {
+	drawButton(resButton0);
+	drawButton(resButton1);	
+		}
+	} else {
 	drawButton(button1);
+	}
 	
 	}
 	 
    
   //chatbox
     ctx.fillStyle = chatColor;
-ctx.fillRect(0,0,1400,800);
+ctx.fillRect(0,0,1400,900);
 
     ctx.fillStyle = "#000000";
-ctx.fillRect(500,0,400,800);
+ctx.fillRect(500,0,400,900);
 
    ctx.fillStyle = "#000000";
    ctx.font = '21px serif';
@@ -328,7 +448,9 @@ ctx.fillText(connected[i].name,550,50+25*i+25);
 }
 ctx.fillStyle = "#000000";	
 
-	  
+	  if(phase==2) {
+		  chatScreen=0;
+	  }
 	  
 	  if ( roomData.status=="running") {
 		  
@@ -368,6 +490,12 @@ ctx.fillText(soulcomm[i].name +' : '+soulcomm[i].arg,25,100+25*i);
   }
   
   
+  interval=interval+0.1;
+  
+  if (interval>= 100 ) {
+	  interval = 0;
+	  
+  }
   
 
 }, 100);
@@ -390,8 +518,9 @@ function isInside(pos, rect){
 canvas.addEventListener('click', function(evt) {
     var mousePos = getMousePos(canvas, evt);
 
-    if (isInside(mousePos,button1) && roomData.status=="running") {
-        if(chatScreen==0) {
+    if (isInside(mousePos,button1) && roomData.status=="running" && phase!=2) {
+        
+		if(chatScreen==0) {
 			chatScreen=1;
 			button1.text="Public Chat";
 			chatColor="#5e0303"
@@ -406,6 +535,24 @@ canvas.addEventListener('click', function(evt) {
 			chatColor="#c7f2bc"
 			chatFontColor = "#000000"
 		}
+    }
+	
+	   if (isInside(mousePos,resButton0) && roomData.status=="running") {
+        if(phase==2) {
+		
+		
+			 cloak.message('resolution', "0");
+			
+		} 
+    }
+	
+	 if (isInside(mousePos,resButton1) && roomData.status=="running") {
+        if(phase==2) {
+		
+		
+			 cloak.message('resolution', "1");
+			
+		} 
     }
 	
 }, false);
