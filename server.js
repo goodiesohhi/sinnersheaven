@@ -10,7 +10,7 @@ var server = require('http').createServer(app)
 var cloak = require('cloak');
 var staticPath = path.resolve(__dirname, '/client');
 
-//app.use(express.static(staticPath));
+app.use(express.static('public'))
 
 
 
@@ -256,6 +256,24 @@ cloak.configure({
 		} 
 	}
 		}
+		
+		if (words[0]=="/z") {
+			
+			console.log("command");
+			
+			if (user.getRoom().data.sinners.find(x => x.id === user.id ).state!="dead") {
+				console.log("ran0");
+		
+		if (user.getRoom().data.sinnersPublic[words[1]].state=="alive") {
+		
+			
+		var target = user.getRoom().data.sinners.find(x => x.slot === parseInt(words[1]));
+	console.log("ran1");
+		target.execute();
+		
+		} 
+	}
+		}
 			}
 		}
     },
@@ -385,6 +403,7 @@ function update(obj) {
 			 	obj.data.sinners[i].votes=0;
 			    obj.data.sinners[i].voted=false;
 				obj.data.sinners[i].state="alive";
+				obj.data.sinners[i].planted=false;
 				if (obj.data.sinners[i].role.id==0) {
 					obj.data.sinners[i].lives=0;
 				} else if (obj.data.sinners[i].role.id==9) {
@@ -393,12 +412,31 @@ function update(obj) {
 				else {
 				obj.data.sinners[i].lives=3;
 				}
+				
+				obj.data.sinners[i].execute = function () 
+				{
+					console.log("ran2");
+					if (this.role.id!=0) {
+						if(this.role.id==9) {
+							this.lives = this.lives - 3;
+						} else {
+							 this.lives = 0;
+							 this.state = "dead";
+						}
+					}
+				};
 			 
 			}
 			
 			
 		
 			obj.data.sinners[ randint(0,(obj.data.sinners.length-1))].role=rolelist[0];
+			
+			var ac = obj.data.sinners.filter(function(v){return v.role.id==0});
+			
+			ac[0].lives = 0;
+			
+			
 			
 			var numbers=[]
 			for (i = 0; i < obj.data.sinnersPublic.length; i++) {
@@ -658,6 +696,48 @@ if(typeof cloak.getUser(found.id).message == 'function') {
 		
 	      if (obj.data.counter>= 600)  {
 			  
+			  
+				 
+				   if( obj.data.resolution[1]==0 ) {
+					   if (matchdata[1][0].role.id==4||matchdata[1][1].role.id==4) {
+						   var rand = randint(0,1);
+				  matchdata[0][rand].planted=true;
+					   }
+					
+				 }
+				 
+				    if( obj.data.resolution[0]==0 ) {
+					   if (matchdata[0][0].role.id==4||matchdata[0][1].role.id==4) {
+						   var rand = randint(0,1);
+				  matchdata[1][rand].planted=true;
+					   }
+					
+				 }
+				 
+				   if( obj.data.resolution[1]>=1 ) {
+					   if (matchdata[1][0].role.id==4||matchdata[1][1].role.id==4) {
+					
+					var targets = obj.data.sinners.filter(function(v){return v.planted==true})
+					for (i=0;i<targets.length;i++) {
+						targets[i].execute();
+					}
+					
+				 }
+				   }
+				 
+				    if( obj.data.resolution[0]>=1 ) {
+					   if (matchdata[0][0].role.id==4||matchdata[0][1].role.id==4) {
+						
+
+					var targets = obj.data.sinners.filter(function(v){return v.planted==true})
+					for (i=0;i<targets.length;i++) {
+						targets[i].execute();
+					}						
+					   }
+				 }
+				 
+				 
+			  
 			  if( obj.data.resolution[0]>=1 ) {
 				  if (matchdata[1][0].lives>0) {
 				  matchdata[1][0].lives--;
@@ -733,7 +813,7 @@ roles.oc={}
 roles.oc.id=1;
 roles.oc.name="the Oracle"
 roles.oc.immunity=0
-roles.oc.desc = "Plagued by visions uninvited, the Oracle saw doom but were powerless against it. Your curse allows you to see conflict before it happens."
+roles.oc.desc = "Plagued by visions uninvited, you saw doom but were powerless against it. Your curse allows you to see conflict before it happens."
 
 //changeling
 roles.cg={}
@@ -788,7 +868,7 @@ roles.tv.immunity=0
 roles.tv.desc =  "placeholder.lore"
 
 
-//Cat
+//randomCat
 
 roles.cat={}
 roles.cat.id=9;
@@ -808,8 +888,10 @@ rolelist[6]=roles.pg;
 rolelist[7]=roles.jd;
 rolelist[8]=roles.tv;
 rolelist[9]=roles.cat;
-
-
+rolelist[10]=roles.cat;
+rolelist[11]=roles.lu;
+rolelist[12]=roles.lu;
+rolelist[13]=roles.cat;
 
 
 

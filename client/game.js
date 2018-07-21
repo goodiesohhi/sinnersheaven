@@ -1,7 +1,23 @@
 
 var test='http://localhost:5000'
  var userCount = 2;
+var canvas = document.getElementById("canvas");
+var context = canvas.getContext("2d");
+var txt = document.getElementById("txtcanvas");
+var ctx = txt.getContext("2d");
 
+    var rosterBar = new Image();
+  rosterBar.src = "/rosterBar.png";
+  
+  var rosterSlot = new Image();
+  rosterSlot.src = "/slot.png";
+  
+      var chatScreen0 = new Image();
+  chatScreen0.src = "/chatScreen0.png";
+  
+   var chatScreen1 = new Image();
+  chatScreen1.src = "/chatScreen1.png";
+ var panes= [];
   var phase = 0;
    var counter = 0;
    var round =0;
@@ -17,7 +33,7 @@ var test='http://localhost:5000'
    var chatScreen=0;
    var soulcomm=[];
    var chatColor="#c7f2bc";
-   var chatFontColor="#000000";
+   var chatFontColor="#FFFFFF";
    var matchup=[]
    
    var interval=0;
@@ -44,14 +60,68 @@ var test='http://localhost:5000'
         context.fillText(line, x, y);
       }
       
-      
+
   
-  //images
-  var heart0 = new Image();
-  heart0.src = "/public/heart0.png";
+  panes[0]={};
+  panes[0].name="datasheet";
+  panes[0].x=600;
+  panes[0].y=0;
+  panes[0].draw= function () {
+if(typeof theSinner.role != 'undefined') {
+	
+  context.font = '30px serif';
+      context.fillStyle = "#e5dc99";
+	  
+	  	 
+	   var img = new Image();
+  img.src = "/datasheet.png";
+    context.drawImage(img, this.x, this.y);  
+
+
+     context.fillStyle = "#000000";
+	 
+	 
+	 
+  context.fillText( theSinner.name + " " + theSinner.role.name,this.x+50,this.y+50);
+ //  context.fillText( "name the role",650,50);
+ 
+ 
+ if (theSinner.lives>=1) {
+	 
+	   var heart0 = new Image();
+  heart0.src = "/hearts/heart"+theSinner.role.id+"0.png";
   
   var heart1 = new Image();
-  heart1.src = "/public/heart1.png";
+  heart1.src = "/hearts/heart"+theSinner.role.id+"1.png";
+  
+ for (i=0;i<theSinner.lives;i++) {
+	 
+	 if (Math.floor(interval)%2==0) {
+		 if (theSinner.role.id==9) {
+			  context.drawImage(heart0, this.x+45+50*i, this.y+60);  
+		 } else {
+	 context.drawImage(heart0, this.x+45+100*i, this.y+60,100,100);
+		 }
+	 } else {
+		  if (theSinner.role.id==9) {
+			 context.drawImage(heart1, this.x+45+50*i, this.y+60);  
+		 } else {
+     context.drawImage(heart1, this.x+45+100*i, this.y+60,100,100); 
+	 }
+	 }
+	 
+ }
+ }
+ 
+
+context.font = '20px serif';
+ //var text= "Plagued by visions uninvited, you saw doom but were powerless against it. Your curse allows you to see conflict before it happens."
+  wrapText(context, theSinner.role.desc , this.x+25, this.y+175, 550, 25);
+  
+}
+  }
+  //images
+
 
 cloak.configure({
 
@@ -157,10 +227,7 @@ cloak.configure({
 cloak.run(location.protocol + '//' + location.host);
 console.log(location.protocol + '//' + location.host)
 
-var canvas = document.getElementById("canvas");
-var context = canvas.getContext("2d");
-var txt = document.getElementById("txtcanvas");
-var ctx = txt.getContext("2d");
+
 
 
 
@@ -258,52 +325,29 @@ context.fillStyle = btn.color;
 
 setInterval(function() {
   //main
+  
   context.clearRect(0, 0, canvas.width, canvas.height);
   ctx.clearRect(0, 0, txt.width, txt.height);
   
-  
-  
-  if (theSinner.state!="dead") {
-  context.fillStyle = "#000000";
-context.fillRect(0,0,1400,1000);
+          if (theSinner.state!="dead") {
+			  
+			  	   var black = new Image();
+  black.src = "/black.png";
+    context.drawImage(black, 0, 0);  
+
+ 
   } else {
- context.fillStyle = "#FF0000";
-context.fillRect(0,0,1400,1000);
+		  	   var red = new Image();
+  red.src = "/red.png";
+    context.drawImage(red, 0, 0);  
+
   }
   
-  //datasheet
-if(typeof theSinner.role != 'undefined') {
-	
-  context.font = '30px serif';
-      context.fillStyle = "#e5dc99";
-  context.fillRect(600,0,650,300);
-     context.fillStyle = "#000000";
-	 
-  context.fillText( theSinner.name + " " + theSinner.role.name,650,50);
- //  context.fillText( "name the role",650,50);
- 
- 
- if (theSinner.lives>=1) {
- for (i=0;i<theSinner.lives;i++) {
-	 
-	 if (Math.floor(interval)%2==0) {
-	 context.drawImage(heart0, 645+50*i, 60);
-	 } else {
-     context.drawImage(heart1, 645+50*i, 60); 
-	 }
-	 
- }
- }
- 
+  panes[0].draw();
 
-context.font = '20px serif';
- //var text= "Plagued by visions uninvited, you saw doom but were powerless against it. Your curse allows you to see conflict before it happens."
-  wrapText(context, theSinner.role.desc , 625, 175, 550, 25);
-  
-}
   
 
-   context.fillStyle = "#FFFFFF";
+   context.fillStyle = "#000000";
    context.font = '32px serif';
    
     if ( roomData.status=="running") {
@@ -372,12 +416,22 @@ if (theSinner.id==matchup[0][0].id||theSinner.id==matchup[0][1].id||theSinner.id
    
   //chatbox
     ctx.fillStyle = chatColor;
-ctx.fillRect(0,0,1400,900);
+	
+	if (chatScreen==0) {
 
-    ctx.fillStyle = "#000000";
+ctx.drawImage(chatScreen0,0 , 0); 
+	} else {
+ctx.drawImage(chatScreen1,0 , 0); 
+	}
+	
+
+    ctx.fillStyle = "#1c172d";
+	//roster
+	
 ctx.fillRect(500,0,400,900);
+ctx.drawImage(rosterBar,500 , 0); 
 
-   ctx.fillStyle = "#000000";
+   ctx.fillStyle = "#FFFFFF";
    ctx.font = '21px serif';
 	
    cloak.message('checkRoom',"hey" )
@@ -401,6 +455,9 @@ if ( roomData.status=="running") {
 ctx.fillText("The Sinners:",550,50);
 //roster
 	  for (i = 0; i < players.length; i++) {
+		  
+		  ctx.drawImage(rosterSlot, 500,50+30*i);  
+		  
 	
 ctx.fillStyle = "#FFFFFF";	
 if (players[i].state=="dead") {
@@ -408,12 +465,12 @@ if (players[i].state=="dead") {
 		if (theSinner.state!="dead") {
 ctx.fillText("["+i+"]: "+players[i].name+" X "+players[i].votes,550,50+25*i+25);
 		} else {
-ctx.fillText("["+i+"]: "+players[i].name,550,50+25*i+25);
+ctx.fillText("["+i+"]: "+players[i].name,550,50+30*i+25);
 		}
 	} 
 	
 	if (phase!=1) {
-ctx.fillText("["+i+"]: "+players[i].name,550,50+25*i+25);
+ctx.fillText("["+i+"]: "+players[i].name,550,50+30*i+25);
 	}
 
 var text = ctx.measureText("["+i+"]: "+players[i].name);
@@ -422,14 +479,14 @@ ctx.fillRect(550, 50+25*i+(Math.floor(20)), text.width, 2);
 	
 	if (phase==1) {
 		if (theSinner.state!="dead") {
-ctx.fillText("["+i+"]: "+players[i].name+" X "+players[i].votes,550,50+25*i+25);
+ctx.fillText("["+i+"]: "+players[i].name+" X "+players[i].votes,550,50+30*i+25);
 		} else {
-ctx.fillText("["+i+"]: "+players[i].name,550,50+25*i+25);
+ctx.fillText("["+i+"]: "+players[i].name,550,50+30*i+25);
 		}
 	} 
 	
 	if (phase!=1) {
-ctx.fillText("["+i+"]: "+players[i].name,550,50+25*i+25);
+ctx.fillText("["+i+"]: "+players[i].name,550,50+30*i+25);
 	}
 	
 }
@@ -442,7 +499,7 @@ ctx.fillText("Connected Players:",550,50);
 	  for (i = 0; i < connected.length; i++) {
 	
 ctx.fillStyle = "#FFFFFF";	
-ctx.fillText(connected[i].name,550,50+25*i+25);
+ctx.fillText(connected[i].name,550,50+30*i+25);
 	
 }
 
@@ -471,11 +528,38 @@ ctx.fillText('Round: '+ round + ' Phase: '+phase+' Time:'+ (600-counter) , 25, 5
 	  }
 
 if(chatScreen==0){
-for (i = 0; i < global.length; i++) {
+	
+	if (phase==1) {
+		
+		
+		if (theSinner.id==matchup[0][0].id||theSinner.id==matchup[0][1].id||theSinner.id==matchup[1][0].id||theSinner.id==matchup[1][1].id) {
+           		for (i = 0; i < global.length; i++) {
 	 ctx.fillStyle = chatFontColor;
 ctx.fillText(global[i].name +' : '+global[i].arg,25,100+25*i);
 	
 } 
+		} else {
+			
+
+
+		}
+		
+		
+	}
+	
+		
+		else {
+			
+		for (i = 0; i < global.length; i++) {
+	 ctx.fillStyle = chatFontColor;
+ctx.fillText(global[i].name +' : '+global[i].arg,25,100+25*i);
+	
+} 
+
+		}
+   
+   
+
 }
 else {
 //soulcomm	
@@ -525,7 +609,7 @@ canvas.addEventListener('click', function(evt) {
 			chatScreen=1;
 			button1.text="Public Chat";
 			chatColor="#5e0303"
-			chatFontColor="#FFFFFF"
+			chatFontColor="#000000"
 			button1.font="28px serif"
 			
 			
@@ -534,7 +618,7 @@ canvas.addEventListener('click', function(evt) {
 			button1.font="22px serif"
 			button1.text="Soul Communication"
 			chatColor="#c7f2bc"
-			chatFontColor = "#000000"
+			chatFontColor = "#FFFFFF"
 		}
     }
 	
