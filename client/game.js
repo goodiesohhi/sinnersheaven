@@ -347,7 +347,7 @@ setInterval(function() {
 
   
 
-   context.fillStyle = "#000000";
+   context.fillStyle = "#FFFFFF";
    context.font = '32px serif';
    
     if ( roomData.status=="running") {
