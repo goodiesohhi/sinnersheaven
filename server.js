@@ -378,7 +378,7 @@ function update(obj) {
 	if (!obj.data.initialized)
 	{
 		
-		if(obj.getMembers().length % 2  == 0 && obj.getMembers().length >= 4){
+		if(obj.getMembers().length % 2  == 0 && obj.getMembers().length >= 8){
 			
 	     obj.data.status="starting";
 		 
